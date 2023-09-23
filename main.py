@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from PIL import Image, ImageDraw, ImageFont
+#from PIL import Image, ImageDraw, ImageFont
 
 app = Flask(__name__)
 
