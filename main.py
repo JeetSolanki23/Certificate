@@ -1,37 +1,36 @@
-from flask import Flask, request, jsonify
-import commands_varifier
-from commands_varifier import varify
-from Responses import ReplyBrain
-import json
+from flask import Flask, render_template, request
+from PIL import Image, ImageDraw, ImageFont
 
 app = Flask(__name__)
 
 @app.route('/')
-def home():
-    return "Namaste"
+def index():
+    return render_template('index.html')
 
-@app.route('/predict', methods=["GET","POST"])
-def predict():
-	
-    query = request.json['query'].lower()
-    apps_list = request.json['apps_list']
+@app.route('/generate', methods=['POST'])
+def generate():
+    name = request.form['name']
+    template = Image.open('certificate_template.png')  # Replace with your certificate template image
 
+    # Load the font for the certificate text
+    font = ImageFont.truetype('arial.ttf', 48)  # Replace with your desired font and size
 
-    # result = {'response' : 'it\'s done'}
-    result = varify(query,apps_list)
- 
+    # Create a draw object
+    draw = ImageDraw.Draw(template)
 
-    if result['Category'] != 'open app':
-        ans = ReplyBrain(query)
-        if "'" not in ans:
-            result = "{'Category':'reply','speak': '"+ans+"'}"
-        else:
-            result = '{"Category":"reply","speak": "'+ans+'"}'
+    # Calculate the position to center the text
+    text_width, text_height = draw.textsize(name, font=font)
+    x = (template.width - text_width) / 2
+    y = (template.height - text_height) / 2
 
-        return result
-        # return jsonify(json.loads(result))
-    else:
-        return jsonify(result)
+    # Draw the text on the certificate
+    draw.text((x, y), name, fill='black', font=font)
 
-if __name__=='__main__':
-    app.run(debug=True, host="0.0.0.0")
+    # Save the generated certificate
+    certificate_path = f'certificates/{name}.png'  # Replace with your desired output path
+    template.save(certificate_path)
+
+    return render_template('certificate.html', name=name, certificate_path=certificate_path)
+
+if __name__ == '__main__':
+    app.run(debug=True,host="0.0.0.0")
