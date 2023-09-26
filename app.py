@@ -22,7 +22,8 @@ def generate_certificate():
     draw = ImageDraw.Draw(template)
 
     # Load the font
-    font = ImageFont.truetype(font_path, size=48)
+    #font = ImageFont.truetype(font_path, size=48)
+    font = ImageFont.truetype('arial.ttf', 48)
 
     # Position and text color
     text_position = (400, 300)
