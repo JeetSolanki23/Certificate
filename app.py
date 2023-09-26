@@ -1,37 +1,40 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from PIL import Image, ImageDraw, ImageFont
+import os
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    #return "Namaste"
     return render_template('index.html')
 
 @app.route('/generate', methods=['POST'])
-def generate():
+def generate_certificate():
     name = request.form['name']
-    template = Image.open('certificate_template.png')  # Replace with your certificate template image
+    template_path = 'static/certificate_template.png'
+    #font_path = 'fonts/arial.ttf'
+    output_path = f'static/generated_certificates/{name}_certificate.png'
 
-    # Load the font for the certificate text
-    font = ImageFont.truetype('arial.ttf', 48)  # Replace with your desired font and size
+    # Load the certificate template image
+    template = Image.open(template_path)
 
-    # Create a draw object
+    # Create a drawing context
     draw = ImageDraw.Draw(template)
 
-    # Calculate the position to center the text
-    text_width, text_height = draw.textsize(name, font=font)
-    x = (template.width - text_width) / 2
-    y = (template.height - text_height) / 2
+    # Load the font
+    font = ImageFont.truetype(font_path, size=48)
 
-    # Draw the text on the certificate
-    draw.text((x, y), name, fill='black', font=font)
+    # Position and text color
+    text_position = (400, 300)
+    text_color = (0, 0, 0)  # Black
+
+    # Draw the name on the certificate
+    draw.text(text_position, name, font=font, fill=text_color)
 
     # Save the generated certificate
-    certificate_path = f'certificates/{name}.png'  # Replace with your desired output path
-    template.save(certificate_path)
+    template.save(output_path)
 
-    return render_template('certificate.html', name=name, certificate_path=certificate_path)
+    return send_file(output_path, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0")
+    app.run()
