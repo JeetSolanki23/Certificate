@@ -12,7 +12,7 @@ def index():
 def generate_certificate():
     name = request.form['name']
     template_path = 'static/certificate_template.png'
-    #font_path = 'fonts/arial.ttf'
+    font_path = 'fonts/Batangas.otf'
     output_path = f'static/generated_certificates/{name}_certificate.png'
 
     # Load the certificate template image
@@ -22,8 +22,8 @@ def generate_certificate():
     draw = ImageDraw.Draw(template)
 
     # Load the font
-    #font = ImageFont.truetype(font_path, size=48)
-    font = ImageFont.truetype('arial.ttf', 48)
+    font = ImageFont.truetype(font_path, size=48)
+    #font = ImageFont.truetype('arial.ttf', 48)
 
     # Position and text color
     text_position = (400, 300)
